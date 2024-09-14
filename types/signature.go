@@ -20,6 +20,11 @@ type Signature struct {
 	v      byte
 }
 
+type Ed25519Signature struct {
+	PubKey []byte
+	Sig    []byte
+}
+
 func ParseSignature(message, resp []byte) (*Signature, error) {
 	// check for old template first because TagRawSignature matches the pubkey tag
 	template, err := apdu.FindTag(resp, apdu.Tag{TagSignatureTemplate})
@@ -34,6 +39,20 @@ func ParseSignature(message, resp []byte) (*Signature, error) {
 	}
 
 	return ParseRecoverableSignature(message, sig)
+}
+
+func ParseSignature2(resp []byte) (*Ed25519Signature, error) {
+	return &Ed25519Signature{
+		PubKey: resp[:65],
+		Sig:    resp[65:],
+	}, nil
+}
+
+func ParseEd25519Signature(resp []byte) (*Ed25519Signature, error) {
+	return &Ed25519Signature{
+		PubKey: resp[:64],
+		Sig:    resp[64:],
+	}, nil
 }
 
 func ParseRecoverableSignature(message, sig []byte) (*Signature, error) {

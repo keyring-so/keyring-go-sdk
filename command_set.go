@@ -355,7 +355,7 @@ func (cs *CommandSet) SetPinlessPath(path string) error {
 	return cs.checkOK(resp, err)
 }
 
-func (cs *CommandSet) Sign(data []byte) (*types.Signature, error) {
+func (cs *CommandSet) Sign(data []byte) (*types.Ed25519Signature, error) {
 	cmd, err := NewCommandSign(data, P1SignCurrentKey, "")
 	if err != nil {
 		return nil, err
@@ -366,7 +366,21 @@ func (cs *CommandSet) Sign(data []byte) (*types.Signature, error) {
 		return nil, err
 	}
 
-	return types.ParseSignature(data, resp.Data)
+	return types.ParseSignature2(resp.Data)
+}
+
+func (cs *CommandSet) Ed25519Sign(data []byte) (*types.Ed25519Signature, error) {
+	cmd, err := NewCommandEd25519Sign(data, P1SignCurrentKey, "")
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := cs.sc.Send(cmd)
+	if err = cs.checkOK(resp, err); err != nil {
+		return nil, err
+	}
+
+	return types.ParseEd25519Signature(resp.Data)
 }
 
 func (cs *CommandSet) SignWithPath(data []byte, path string) (*types.Signature, error) {
