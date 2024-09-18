@@ -43,8 +43,8 @@ func ParseSignature(message, resp []byte) (*Signature, error) {
 
 func ParseEd25519Signature(resp []byte) (*Ed25519Signature, error) {
 	return &Ed25519Signature{
-		PubKey: resp[:64],
-		Sig:    resp[64:],
+		PubKey: resp[:32],
+		Sig:    resp[32:],
 	}, nil
 }
 
