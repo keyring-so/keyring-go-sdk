@@ -27,6 +27,7 @@ const (
 	InsDeriveKey            = 0xD1
 	InsExportKey            = 0xC2
 	InsSign                 = 0xC0
+	InsEd25519Sign          = 0x30
 	InsSetPinlessPath       = 0xC1
 	InsGetData              = 0xCA
 	InsLoadKey              = 0xD0
@@ -349,6 +350,32 @@ func NewCommandSign(data []byte, p1 uint8, pathStr string) (*apdu.Command, error
 	return apdu.NewCommand(
 		globalplatform.ClaGp,
 		InsSign,
+		p1,
+		1,
+		data,
+	), nil
+}
+
+func NewCommandEd25519Sign(data []byte, p1 uint8, pathStr string) (*apdu.Command, error) {
+	if p1 == P1SignDerive || p1 == P1SignDeriveAndMakeCurrent {
+		_, path, err := derivationpath.Decode(pathStr)
+		if err != nil {
+			return nil, err
+		}
+
+		pathData := new(bytes.Buffer)
+		for _, segment := range path {
+			if err := binary.Write(pathData, binary.BigEndian, segment); err != nil {
+				return nil, err
+			}
+		}
+
+		data = append(data, pathData.Bytes()...)
+	}
+
+	return apdu.NewCommand(
+		globalplatform.ClaGp,
+		InsEd25519Sign,
 		p1,
 		1,
 		data,
