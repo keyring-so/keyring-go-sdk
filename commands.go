@@ -327,9 +327,9 @@ func NewCommandSetPinlessPath(pathStr string) (*apdu.Command, error) {
 }
 
 func NewCommandSign(data []byte, p1 uint8, pathStr string) (*apdu.Command, error) {
-	// if len(data) != 32 {
-	// 	return nil, fmt.Errorf("data length must be 32, got %d", len(data))
-	// }
+	if len(data) != 32 {
+		return nil, fmt.Errorf("data length must be 32, got %d", len(data))
+	}
 
 	if p1 == P1SignDerive || p1 == P1SignDeriveAndMakeCurrent {
 		_, path, err := derivationpath.Decode(pathStr)
@@ -357,10 +357,6 @@ func NewCommandSign(data []byte, p1 uint8, pathStr string) (*apdu.Command, error
 }
 
 func NewCommandEd25519Sign(data []byte, p1 uint8, pathStr string) (*apdu.Command, error) {
-	// if len(data) != 32 {
-	// 	return nil, fmt.Errorf("data length must be 32, got %d", len(data))
-	// }
-
 	if p1 == P1SignDerive || p1 == P1SignDeriveAndMakeCurrent {
 		_, path, err := derivationpath.Decode(pathStr)
 		if err != nil {

@@ -41,13 +41,6 @@ func ParseSignature(message, resp []byte) (*Signature, error) {
 	return ParseRecoverableSignature(message, sig)
 }
 
-func ParseSignature2(resp []byte) (*Ed25519Signature, error) {
-	return &Ed25519Signature{
-		PubKey: resp[:65],
-		Sig:    resp[65:],
-	}, nil
-}
-
 func ParseEd25519Signature(resp []byte) (*Ed25519Signature, error) {
 	return &Ed25519Signature{
 		PubKey: resp[:64],
